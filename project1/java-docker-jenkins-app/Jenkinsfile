@@ -11,7 +11,8 @@ pipeline {
         }
         stage('Maven Build') {
             steps {
-                sh 'mvn clean package'
+                sh 'project1/java-docker-jenkins-app/mvn clean package'
+               
             }
         }
         stage('SonarQube Testing') {
