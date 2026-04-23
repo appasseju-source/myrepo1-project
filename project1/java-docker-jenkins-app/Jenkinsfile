@@ -39,26 +39,43 @@ pipeline {
         // }
         stage('Docker Build') {
             steps {
-                sh 'docker build -t test-app:latest .'
+                dir('project1/java-docker-jenkins-app') {
+                    sh '''
+                        docker build -t ${DOCKER_IMAGE_NAME}:${IMAGE_TAG} .
+                        docker tag ${DOCKER_IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_IMAGE_NAME}:latest
+                    '''
+                }
             }
         }
         stage('Docker ECR Push') {
             steps {
-                script {
-                    def awsAccountId = 'your-aws-account-id'
-                    def region = 'your-region'
-                    def repositoryName = 'your-repo-name'
-                    def imageTag = 'latest'
-
-                    sh "aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${awsAccountId}.dkr.ecr.${region}.amazonaws.com"
-                    sh "docker tag test-app:${imageTag} ${awsAccountId}.dkr.ecr.${region}.amazonaws.com/${repositoryName}:${imageTag}"
-                    sh "docker push ${awsAccountId}.dkr.ecr.${region}.amazonaws.com/${repositoryName}:${imageTag}"
-                }
+                sh '''
+                    aws ecr get-login-password --region ${AWS_REGION} | \
+                    docker login --username AWS --password-stdin ${ECR_REGISTRY}
+                    
+                    docker tag ${DOCKER_IMAGE_NAME}:${IMAGE_TAG} ${ECR_REGISTRY}/${ECR_REPOSITORY_NAME}:${IMAGE_TAG}
+                    docker tag ${DOCKER_IMAGE_NAME}:latest ${ECR_REGISTRY}/${ECR_REPOSITORY_NAME}:latest
+                    
+                    docker push ${ECR_REGISTRY}/${ECR_REPOSITORY_NAME}:${IMAGE_TAG}
+                    docker push ${ECR_REGISTRY}/${ECR_REPOSITORY_NAME}:latest
+                '''
             }
         }
         stage('Deploy Container') {
             steps {
-                sh 'docker run -d -p 9090:9090 test-app:latest'
+                sh '''
+                    docker stop java-docker-app-container 2>/dev/null || true
+                    docker rm java-docker-app-container 2>/dev/null || true
+                    
+                    docker run -d \
+                        --name java-docker-app-container \
+                        -p 9090:8080 \
+                        ${ECR_REGISTRY}/${ECR_REPOSITORY_NAME}:${IMAGE_TAG}
+                    
+                    echo "✅ Container deployed successfully on localhost:9090"
+                    sleep 5
+                    docker logs java-docker-app-container
+                '''
             }
         }
     }
