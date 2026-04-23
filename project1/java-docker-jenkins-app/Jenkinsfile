@@ -16,9 +16,8 @@ pipeline {
         }
         stage('Maven Build') {
             steps {
-        // 'maven-3.9.15' should match the name you gave it in Global Tool Configuration
-            withMaven(maven: 'maven') {
-            sh "mvn clean package -DskipTests"
+                withMaven(maven: 'maven') {
+                    sh 'mvn clean package -DskipTests'
                 }
             }
         }
