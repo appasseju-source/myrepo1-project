@@ -11,9 +11,11 @@ pipeline {
         }
         stage('Maven Build') {
             steps {
-                sh 'project1/java-docker-jenkins-app/mvn clean package'
-               
-            }
+        // 'maven-3.9.15' should match the name you gave it in Global Tool Configuration
+            withMaven(maven: 'maven-3.9.15') {
+            sh "project1/java-docker-jenkins-app/mvn clean package"
+        }
+    }
         }
         stage('SonarQube Testing') {
             steps {
