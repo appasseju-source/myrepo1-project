@@ -1,9 +1,9 @@
 pipeline {
     agent any
     environment {
-        Defaultworkspace = 'project1/java-docker-jenkins-app'
-        SONARQUBE_URL = 'http://your-sonarqube-server:9000'
-        SONARQUBE_AUTH_TOKEN = credentials('sonarqube-auth-token')
+        Defaultworkspace = '\project1\java-docker-jenkins-app'
+        //SONARQUBE_URL = 'http://your-sonarqube-server:9000'
+        //SONARQUBE_AUTH_TOKEN = credentials('sonarqube-auth-token')
     }
 
     stages {
