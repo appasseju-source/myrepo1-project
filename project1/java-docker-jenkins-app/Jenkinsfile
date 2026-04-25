@@ -79,7 +79,6 @@ pipeline {
                         -p 9090:9090 \
                         ${ECR_REGISTRY}/${ECR_REPOSITORY_NAME}:${IMAGE_TAG}
                     
-                    echo "✅ Container deployed successfully on localhost:9090"
                     sleep 5
                     docker logs java-docker-app-container
                 '''
