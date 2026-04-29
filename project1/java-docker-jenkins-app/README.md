@@ -28,7 +28,6 @@ java-docker-jenkins-app
 ├── Dockerfile
 ├── Jenkinsfile
 ├── pom.xml
-├── sonar-project.properties
 └── README.md
 ```
 
@@ -69,7 +68,6 @@ java-docker-jenkins-app
    The Jenkinsfile defines the CI/CD pipeline with the following stages:
    - Code Checkout
    - Maven Build
-   - SonarQube Testing
    - Docker Build
    - ECR Push
    - Deploy Container
